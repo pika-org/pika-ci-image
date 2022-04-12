@@ -1,0 +1,105 @@
+# Copyright (c) 2022 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: Build, test and deploy docker images
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Build base docker image
+  build_base_image:
+    name: github/pika-ci-base/fast
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile.base
+          push: true
+          tags: ${{ secrets.DOCKER_USER }}/pika-ci-base:latest,${{ secrets.DOCKER_USER }}/pika-ci-base:1
+
+#env:
+#  IMAGE_NAME_LATEST: pikaorg/pika-ci-base:latest
+#  IMAGE_NAME_VERSIONED: pikaorg/pika-ci-base:1
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: Build base docker image
+#    #    uses: docker/login-action@v1
+#        shell: bash
+#        run: |
+#          echo "Hello World"
+#          docker build -f Dockerfile.base -t ${IMAGE_NAME_LATEST} .
+#          docker tag ${IMAGE_NAME_LATEST} ${IMAGE_NAME_VERSIONED}
+#          docker images
+#    - name: Test base docker image
+#      shell: bash
+#      run: |
+#          docker run ${IMAGE_NAME_LATEST} cmake --version
+#          git clone https://github.com/pika-org/pika.git --depth=1
+#          docker run ${IMAGE_NAME_LATEST} printenv
+#          docker create -v /pika --name app ${IMAGE_NAME_LATEST} /bin/true
+#          docker cp /root/project/pika/./ app:/pika
+#          docker run --volumes-from app ${IMAGE_NAME_LATEST} mkdir /pika/build
+#          docker run --volumes-from app -w /pika/build ${IMAGE_NAME_LATEST} cmake .. -DPIKA_WITH_MALLOC=jemalloc -G Ninja
+#          docker run --volumes-from app -w /pika/build ${IMAGE_NAME_LATEST} ninja core
+#    - name: Deploy base docker image
+#      shell: bash
+#      run: |
+#          if [ "${CIRCLE_BRANCH}" == "main" ]; then
+#              docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+#              docker push ${IMAGE_NAME_LATEST}
+#              docker push ${IMAGE_NAME_VERSIONED}
+#          fi
+
+#  # Build hip docker image
+#  build_hip_image:
+#    name: github/pika-ci-hip/fast
+#    needs: build_base_image
+#    runs-on: ubuntu-latest
+#    container: docker:17.05.0-ce-git
+#    env:
+#      IMAGE_NAME_LATEST: pikaorg/pika-ci-hip:latest
+#      IMAGE_NAME_VERSIONED: pikaorg/pika-ci-hip:1
+#
+#    steps:
+#    - uses: actions/checkout@v3
+#    - name: Build hip docker image
+#      shell: bash
+#      run: |
+#          docker build -f Dockerfile.base -t ${IMAGE_NAME_LATEST} .
+#          docker tag ${IMAGE_NAME_LATEST} ${IMAGE_NAME_VERSIONED}
+#          docker images
+#    - name: Test hip docker image
+#      shell: bash
+#      run: |
+#          docker run ${IMAGE_NAME_LATEST} cmake --version
+#          git clone https://github.com/pika-org/pika.git --depth=1
+#          docker run ${IMAGE_NAME_LATEST} printenv
+#          docker create -v /pika --name app ${IMAGE_NAME_LATEST} /bin/true
+#          docker cp /root/project/pika/./ app:/pika
+#          docker run --volumes-from app ${IMAGE_NAME_LATEST} mkdir /pika/build
+#          docker run --volumes-from app -w /pika/build ${IMAGE_NAME_LATEST} cmake .. -DPIKA_WITH_MALLOC=jemalloc -G Ninja
+#          docker run --volumes-from app -w /pika/build ${IMAGE_NAME_LATEST} ninja core
+#    - name: Deploy hip docker image
+#      shell: bash
+#      run: |
+#          if [ "${CIRCLE_BRANCH}" == "main" ]; then
+#              docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+#              docker push ${IMAGE_NAME_LATEST}
+#              docker push ${IMAGE_NAME_VERSIONED}
+#          fi
