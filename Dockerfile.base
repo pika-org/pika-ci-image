@@ -36,44 +36,24 @@ RUN apt-get update -qq && apt-get install -y -qq    \
                     clang                           \
                     clang-format-11                 \
                     clang-tidy                      \
-                    jq                              \
-                    kmod                            \
-                    llvm                            \
                     lld                             \
+                    llvm                            \
                     llvm-dev                        \
-                    libasio-dev                     \
                     libclang-dev                    \
                     libhwloc-dev                    \
                     libjemalloc-dev                 \
-                    libboost-atomic-dev             \
-                    libboost-chrono-dev             \
-                    libboost-date-time-dev          \
-                    libboost-filesystem-dev         \
-                    libboost-iostreams-dev          \
-                    libboost-program-options-dev    \
                     libboost-regex-dev              \
-                    libboost-system-dev             \
-                    libboost-thread-dev             \
                     libgoogle-perftools-dev         \
                     mpi-default-dev                 \
-                    vc-dev                          \
-                    doxygen                         \
-                    python3                         \
-                    python3-pip                     \
-                    texlive                         \
-                    texlive-latex-extra             \
-                    latexmk                         \
-                    libjson-perl                    \
                     ninja-build                     \
+                    python3 python3-pip             \
                     codespell                       \
                     git                             \
                     xsltproc                        \
                     rpm                             \
-                    pkg-config                      \
                     graphviz                        \
                     iwyu                            \
-                    devscripts                      \
-                    wget
+                    devscripts
 
 # Get cmake files (in separate RUN command to get cached)
 RUN wget -q https://cmake.org/files/v3.19/cmake-3.19.8-Linux-x86_64.tar.gz -O cmake.tar.gz && \
@@ -81,33 +61,21 @@ RUN wget -q https://cmake.org/files/v3.19/cmake-3.19.8-Linux-x86_64.tar.gz -O cm
     tar --strip-components=1 -C /usr/local -xf cmake.tar.gz && \
     rm cmake.tar.gz
 
+# Install grcov and cpp-dependencies
 RUN wget -q https://github.com/mozilla/grcov/releases/download/v0.7.1/grcov-linux-x86_64.tar.bz2 -O grcov.tar.bz2 && \
     echo "603196293bed54d7ec6fb6d6f85db27966c4512235c7bd6555e1082e765c5bd2 grcov.tar.bz2" | sha256sum --check --status && \
     tar -jxf grcov.tar.bz2 && \
     mv grcov /usr/bin && \
     rm grcov.tar.bz2
 
-# NOTE: breathe is pinned to 4.16.0 as 4.17.0 introduced a regression in
-# handling "friend struct x;", see
-# https://github.com/michaeljones/breathe/issues/521. The pinned version can be
-# removed when the issue has been resolved.
-RUN pip3 install sphinx==3.5.4 breathe==4.16.0 sphinx-rtd-theme sphinx-book-theme sphinxcontrib-bibtex insegel cmake_format && \
-    rm /usr/bin/ld && ln -s /usr/bin/ld.lld /usr/bin/ld && cd /tmp && \
+RUN rm /usr/bin/ld && ln -s /usr/bin/ld.lld /usr/bin/ld && cd /tmp && \
     git clone https://github.com/tomtom-international/cpp-dependencies.git && \
-    cd cpp-dependencies && cmake . && make -j install && \
+    cd cpp-dependencies && cmake -DWITH_BOOST=OFF . && make -j install && \
     cd /tmp && rm -rf /tmp/cpp-dependencies && \
-    git clone --single-branch --branch clang_10 https://github.com/include-what-you-use/include-what-you-use.git && \
-    mkdir -p include-what-you-use/build && cd include-what-you-use/build && \
-    cmake -DCMAKE_PREFIX_PATH="/usr/lib/llvm-10" -DCMAKE_INSTALL_PREFIX="/usr" .. && make -j install && \
-    cd /tmp && rm -rf include-what-you-use && \
-    git clone --single-branch --branch 1.4.1 https://github.com/VcDevel/Vc.git && \
-    cd Vc && git submodule update --init && \
-    mkdir -p build && cd build && \
-    cmake -DBUILD_TESTING=OFF .. && make -j install && \
-    cd /tmp && rm -rf Vc && \
     rm -rf /var/lib/apt/lists/*
 
-ENV CC clang
+RUN pip3 install cmake_format
+
 ENV CXX clang++
 
 # IMPORTANT: Did you read the note at the top of the file?
