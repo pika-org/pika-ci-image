@@ -1,0 +1,33 @@
+# Copyright (c) 2022 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: Build and deploy docker images
+
+# The builds are triggered with pushes on the 'main' branch or with a pull
+# request against the 'main' branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_base_image:
+      uses: ./.github/workflows/build_and_deploy.yml
+      secrets:
+        docker_user: ${{ secrets.DOCKER_USER }}
+        docker_pass: ${{ secrets.DOCKER_PASS }}
+      with:
+        image_name: "pika-ci-base"
+        version: "1"
+  build_hip_image:
+      uses: ./.github/workflows/build_and_deploy.yml
+      secrets:
+        docker_user: ${{ secrets.DOCKER_USER }}
+        docker_pass: ${{ secrets.DOCKER_PASS }}
+      with:
+        image_name: "pika-ci-hip"
+        version: "1"
