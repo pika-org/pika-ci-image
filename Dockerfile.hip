@@ -3,7 +3,9 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-FROM pikaorg/pika-ci-base:latest
+ARG BASE_IMAGE
+
+FROM $BASE_IMAGE
 
 ENV DEBIAN_FRONTEND=noninteractive
 
