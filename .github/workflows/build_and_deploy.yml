@@ -14,7 +14,7 @@ on:
     branches: main
 
 env:
-  version: 2
+  version: 3
   base_image_name: pika-ci-base
   hip_image_name: pika-ci-hip
 
