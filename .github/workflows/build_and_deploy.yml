@@ -14,8 +14,9 @@ on:
     branches: main
 
 env:
-  version: 3
+  base_image_version: 3
   base_image_name: pika-ci-base
+  hip_image_version: 2
   hip_image_name: pika-ci-hip
 
 jobs:
@@ -36,19 +37,19 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.base
-          tags: ${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:latest,${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:${{ env.version }}
+          tags: ${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:latest,${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:${{ env.base_image_version }}
           load: true
       - name: Push base image
         uses: docker/build-push-action@v2
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           file: Dockerfile.base
-          tags: ${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:latest,${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:${{ env.version }}
+          tags: ${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:latest,${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:${{ env.base_image_version }}
           push: true
       - name: Build and deploy HIP image
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile.hip
-          build-args: BASE_IMAGE=${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:${{ env.version }}
-          tags: ${{ secrets.DOCKER_USER }}/${{ env.hip_image_name }}:latest,${{ secrets.DOCKER_USER }}/${{ env.hip_image_name }}:${{ env.version }}
+          build-args: BASE_IMAGE=${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:${{ env.hip_image_version }}
+          tags: ${{ secrets.DOCKER_USER }}/${{ env.hip_image_name }}:latest,${{ secrets.DOCKER_USER }}/${{ env.hip_image_name }}:${{ env.hip_image_version }}
           push: ${{ github.ref == 'refs/heads/main' }}
