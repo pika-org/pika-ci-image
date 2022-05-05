@@ -5,8 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 # The images built from this Dockerfile are versioned with an incrementing
-# number in .circleci/config.yml. The version is set in the environment variable
-# IMAGE_NAME_VERSIONED.
+# number in .github/workflows/build_and_deploy.yml.
 #
 # IMPORTANT: Unless you are 100% sure that the changes to this file will produce
 # an image that is compatible with the previous image please increment the
@@ -16,65 +15,40 @@
 
 FROM ubuntu:jammy
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Update and install libraries
-RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends curl gnupg && \
-    echo "deb-src http://archive.ubuntu.com/ubuntu focal main restricted" >> /etc/apt/sources.list && \
-    echo "deb-src http://archive.ubuntu.com/ubuntu focal-updates main restricted" >> /etc/apt/sources.list && \
-    echo "deb-src http://archive.ubuntu.com/ubuntu focal universe" >> /etc/apt/sources.list && \
-    echo "deb-src http://archive.ubuntu.com/ubuntu focal-updates universe" >> /etc/apt/sources.list && \
-    echo "deb-src http://archive.ubuntu.com/ubuntu focal multiverse" >> /etc/apt/sources.list && \
-    echo "deb-src http://archive.ubuntu.com/ubuntu focal-updates multiverse" >> /etc/apt/sources.list && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update -qq && apt-get install -y -qq    \
-                    apt-utils &&                    \
-                    apt-get install -qq             \
-                    --no-install-recommends -y      \
-                    wget zip curl ca-certificates   \
-                    clang                           \
-                    clang-format-11                 \
-                    clang-tidy                      \
-                    lld                             \
-                    llvm                            \
-                    llvm-dev                        \
-                    libclang-dev                    \
-                    libhwloc-dev                    \
-                    libjemalloc-dev                 \
-                    libboost-regex-dev              \
-                    libgoogle-perftools-dev         \
-                    mpi-default-dev                 \
-                    ninja-build                     \
-                    python3 python3-pip             \
-                    codespell                       \
-                    git                             \
-                    xsltproc                        \
-                    rpm                             \
-                    graphviz                        \
-                    iwyu                            \
-                    devscripts
-
-# Get cmake files (in separate RUN command to get cached)
-RUN wget -q https://cmake.org/files/v3.19/cmake-3.19.8-Linux-x86_64.tar.gz -O cmake.tar.gz && \
-    echo "db0d7d225150dd6e08ce54995e671f9b4801b8e93e22df1eef52339f6bbbecd9  cmake.tar.gz" | sha256sum --check --status && \
-    tar --strip-components=1 -C /usr/local -xf cmake.tar.gz && \
-    rm cmake.tar.gz
-
-# Install grcov and cpp-dependencies
-RUN wget -q https://github.com/mozilla/grcov/releases/download/v0.7.1/grcov-linux-x86_64.tar.bz2 -O grcov.tar.bz2 && \
-    echo "603196293bed54d7ec6fb6d6f85db27966c4512235c7bd6555e1082e765c5bd2 grcov.tar.bz2" | sha256sum --check --status && \
-    tar -jxf grcov.tar.bz2 && \
-    mv grcov /usr/bin && \
-    rm grcov.tar.bz2
-
-RUN rm /usr/bin/ld && ln -s /usr/bin/ld.lld /usr/bin/ld && cd /tmp && \
+# Update and install libraries and tools from repositories
+RUN apt-get update && \
+    apt-get install --no-install-recommends --yes \
+      clang \
+      clang-format \
+      clang-tidy \
+      cmake \
+      codespell \
+      git \
+      make \
+      libboost-regex-dev \
+      libgoogle-perftools-dev \
+      libhwloc-dev \
+      lld \
+      mpi-default-dev \
+      ninja-build \
+      python3 \
+      python3-pip \
+      xsltproc && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    # Install cmake-format
+    pip3 install cmake_format && \
+    # Use lld as the linker
+    rm /usr/bin/ld && \
+    ln -s /usr/bin/ld.lld /usr/bin/ld && \
+    # Install cpp-dependencies
+    cd /tmp && \
     git clone https://github.com/tomtom-international/cpp-dependencies.git && \
-    cd cpp-dependencies && cmake -DWITH_BOOST=OFF . && make -j install && \
-    cd /tmp && rm -rf /tmp/cpp-dependencies && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN pip3 install cmake_format
+    cd cpp-dependencies && \
+    cmake -DWITH_BOOST=OFF . && \
+    make -j install && \
+    cd /tmp && \
+    rm -rf /tmp/cpp-dependencies
 
 ENV CXX clang++
 
