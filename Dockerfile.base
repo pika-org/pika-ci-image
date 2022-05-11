@@ -25,6 +25,7 @@ RUN apt-get update && \
       codespell \
       curl \
       git \
+      graphviz \
       make \
       libboost-regex-dev \
       libgoogle-perftools-dev \
