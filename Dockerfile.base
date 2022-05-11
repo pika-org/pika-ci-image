@@ -23,6 +23,7 @@ RUN apt-get update && \
       clang-tidy \
       cmake \
       codespell \
+      curl \
       git \
       make \
       libboost-regex-dev \
