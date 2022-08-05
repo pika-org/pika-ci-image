@@ -18,6 +18,7 @@ FROM ubuntu:jammy
 # Update and install libraries and tools from repositories
 RUN apt-get update && \
     apt-get install --no-install-recommends --yes \
+      bzip2 \
       clang \
       clang-format \
       clang-tidy \
@@ -55,7 +56,15 @@ RUN apt-get update && \
     cmake -DWITH_BOOST=OFF . && \
     make -j install && \
     cd /tmp && \
-    rm -rf /tmp/cpp-dependencies
+    rm -rf /tmp/cpp-dependencies && \
+    # Install grcov
+    cd /tmp && \
+    curl --output grcov.tar.bz2 \
+      --location https://github.com/mozilla/grcov/releases/download/v0.8.11/grcov-x86_64-unknown-linux-gnu.tar.bz2 && \
+    (echo "a0e79093a5198e20549bdf970ef6028e20ab2d5eb6f5e68abff21da134e5709c grcov.tar.bz2" | sha256sum --check) && \
+    tar xvf grcov.tar.bz2 && \
+    mv grcov /usr/local/bin && \
+    rm -rf grcov.tar.bz2
 
 ENV CXX clang++
 
