@@ -7,8 +7,7 @@
 # The images built from this Dockerfile are versioned with an incrementing
 # number in .github/workflows/build_and_deploy.yml.
 #
-# IMPORTANT: Unless you are 100% sure that the changes to this file will produce
-# an image that is compatible with the previous image please increment the
+# IMPORTANT: Unless you are 100% sure that the changes to this file will produce an image that is compatible with the previous image please increment the
 # version!  Incrementing the version means that the image used for e.g. pika CI
 # can be updated and tested in a separate PR without risking breaking open pull
 # request builds.
@@ -22,7 +21,6 @@ RUN apt-get update && \
       clang \
       clang-format \
       clang-tidy \
-      cmake \
       codespell \
       curl \
       git \
@@ -41,6 +39,13 @@ RUN apt-get update && \
       && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
+    # Install CMake
+    cd /tmp && \
+    curl --output cmake.tar.gz \
+      --location https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1-Linux-x86_64.tar.gz && \
+    (echo "f3c654b2e226b9d43369e0bd8487c51618d4dbe5a1af929dd32af7e6ca432d60" cmake.tar.gz | sha256sum --check) && \
+    tar xvf cmake.tar.gz --strip-components=1 --directory /usr/local && \
+    rm -rf cmake.tar.gz && \
     # Install cmake-format
     pip3 install \
       black \
@@ -64,7 +69,15 @@ RUN apt-get update && \
     (echo "a0e79093a5198e20549bdf970ef6028e20ab2d5eb6f5e68abff21da134e5709c grcov.tar.bz2" | sha256sum --check) && \
     tar xvf grcov.tar.bz2 && \
     mv grcov /usr/local/bin && \
-    rm -rf grcov.tar.bz2
+    rm -rf grcov.tar.bz2 && \
+    # Install p2300 reference implementation
+    cd /tmp && \
+    git clone https://github.com/brycelelbach/wg21_p2300_std_execution.git && \
+    cd wg21_p2300_std_execution && \
+    cmake . && \
+    make install && \
+    cd /tmp && \
+    rm -rf /tmp/wg21_p2300_std_execution
 
 ENV CXX clang++
 
