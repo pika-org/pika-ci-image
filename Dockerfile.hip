@@ -34,5 +34,3 @@ RUN cd /tmp && \
     make install && \
     cd /tmp && \
     rm -rf /tmp/whip
-
-ENV CXX hipcc
