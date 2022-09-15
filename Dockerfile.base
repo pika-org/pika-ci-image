@@ -22,7 +22,6 @@ RUN apt-get update && \
       clang \
       clang-format \
       clang-tidy \
-      cmake \
       codespell \
       curl \
       git \
@@ -41,6 +40,13 @@ RUN apt-get update && \
       && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
+    # Install CMake
+    cd /tmp && \
+    curl --output cmake.tar.gz \
+      --location https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1-Linux-x86_64.tar.gz && \
+    (echo "f3c654b2e226b9d43369e0bd8487c51618d4dbe5a1af929dd32af7e6ca432d60" cmake.tar.gz | sha256sum --check) && \
+    tar xvf cmake.tar.gz --strip-components=1 --directory /usr/local && \
+    rm -rf cmake.tar.gz && \
     # Install cmake-format
     pip3 install \
       black \
