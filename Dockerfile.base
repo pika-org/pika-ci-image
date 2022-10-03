@@ -70,14 +70,14 @@ RUN apt-get update && \
     tar xvf grcov.tar.bz2 && \
     mv grcov /usr/local/bin && \
     rm -rf grcov.tar.bz2 && \
-    # Install p2300 reference implementation
+    # Install P2300 reference implementation
     cd /tmp && \
-    git clone https://github.com/brycelelbach/wg21_p2300_std_execution.git && \
-    cd wg21_p2300_std_execution && \
+    git clone https://github.com/NVIDIA/stdexec.git && \
+    cd stdexec && \
     cmake . && \
     make install && \
     cd /tmp && \
-    rm -rf /tmp/wg21_p2300_std_execution
+    rm -rf /tmp/stdexec
 
 ENV CXX clang++
 
