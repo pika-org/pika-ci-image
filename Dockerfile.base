@@ -28,6 +28,7 @@ RUN apt-get update && \
       make \
       libboost-regex-dev \
       libgoogle-perftools-dev \
+      libfmt-dev \
       libhwloc-dev \
       lld \
       mpi-default-dev \
