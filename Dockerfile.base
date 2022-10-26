@@ -28,6 +28,7 @@ RUN apt-get update && \
       make \
       libboost-filesystem-dev \
       libboost-regex-dev \
+      libfmt-dev \
       libgoogle-perftools-dev \
       libhwloc-dev \
       lld \
