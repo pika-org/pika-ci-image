@@ -26,9 +26,9 @@ RUN apt-get update && \
       git \
       graphviz \
       make \
+      libboost-filesystem-dev \
       libboost-regex-dev \
       libgoogle-perftools-dev \
-      libfmt-dev \
       libhwloc-dev \
       lld \
       mpi-default-dev \
@@ -59,7 +59,7 @@ RUN apt-get update && \
     cd /tmp && \
     git clone https://github.com/tomtom-international/cpp-dependencies.git && \
     cd cpp-dependencies && \
-    cmake -DWITH_BOOST=OFF . && \
+    cmake -DWITH_BOOST=ON . && \
     make -j install && \
     cd /tmp && \
     rm -rf /tmp/cpp-dependencies && \
