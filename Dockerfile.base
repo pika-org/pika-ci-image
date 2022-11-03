@@ -28,7 +28,6 @@ RUN apt-get update && \
       make \
       libboost-filesystem-dev \
       libboost-regex-dev \
-      libfmt-dev \
       libgoogle-perftools-dev \
       libhwloc-dev \
       lld \
@@ -79,7 +78,16 @@ RUN apt-get update && \
     cmake . && \
     make install && \
     cd /tmp && \
-    rm -rf /tmp/stdexec
+    rm -rf /tmp/stdexec && \
+    # Install fmt
+    cd /tmp && \
+    git clone https://github.com/fmtlib/fmt.git && \
+    cd fmt && \
+    git checkout 9.1.0 && \
+    cmake -DBUILD_SHARED_LIBS=ON . && \
+    make install && \
+    cd /tmp && \
+    rm -rf /tmp/fmt
 
 ENV CXX clang++
 
