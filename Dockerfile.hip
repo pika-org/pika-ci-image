@@ -33,4 +33,14 @@ RUN cd /tmp && \
     cmake -DWHIP_BACKEND=HIP . && \
     make install && \
     cd /tmp && \
-    rm -rf /tmp/whip
+    rm -rf /tmp/whip && \
+    # Install fmt (NOTE: fmt is installed in newer versions of the base image,
+    # but not in the currently used version of the base image)
+    cd /tmp && \
+    git clone https://github.com/fmtlib/fmt.git && \
+    cd fmt && \
+    git checkout 9.1.0 && \
+    cmake -DBUILD_SHARED_LIBS=ON . && \
+    make install && \
+    cd /tmp && \
+    rm -rf /tmp/fmt
