@@ -35,20 +35,20 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
       - name: Build base image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           file: Dockerfile.base
           tags: ${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:latest,${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:${{ env.base_image_version }}
           load: true
       - name: Push base image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           file: Dockerfile.base
           tags: ${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:latest,${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:${{ env.base_image_version }}
           push: true
       - name: Build and deploy HIP image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           file: Dockerfile.hip
           build-args: BASE_IMAGE=${{ secrets.DOCKER_USER }}/${{ env.base_image_name }}:${{ env.hip_base_image_version }}
