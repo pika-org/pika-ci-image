@@ -13,7 +13,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN wget -q -O - https://repo.radeon.com/rocm/rocm.gpg.key | apt-key add - && \
     echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/debian/ ubuntu main' | \
     tee /etc/apt/sources.list.d/rocm.list && apt-get update -qq && \
-    apt-get install -qq -y rocm-dev rocm-libs hipblas && \
+    apt-get install -qq -y rocm-dev rocm-libs rocblas && \
     rm -rf /var/lib/apt/lists/*
 
 ENV ROCM_PATH=/opt/rocm
