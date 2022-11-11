@@ -14,7 +14,7 @@ RUN wget -q -O - https://repo.radeon.com/rocm/rocm.gpg.key | apt-key add - && \
     echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/debian/ ubuntu main' | \
     tee /etc/apt/sources.list.d/rocm.list && apt-get update -qq && \
     apt-get install -qq -y rocm-dev rocm-libs rocblas && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ENV ROCM_PATH=/opt/rocm
 ENV PATH="${ROCM_PATH}/bin:${ROCM_PATH}/rocprofiler/bin:${ROCM_PATH}/opencl/bin:${PATH}"
