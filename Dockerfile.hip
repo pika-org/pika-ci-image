@@ -10,11 +10,14 @@ FROM $BASE_IMAGE
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install ROCm
-RUN wget -q -O - https://repo.radeon.com/rocm/rocm.gpg.key | apt-key add - && \
-    echo 'deb [arch=amd64] https://repo.radeon.com/rocm/apt/debian/ ubuntu main' | \
+# (using rocm-dev5.3.2 instead of rocm-dev as rocm-dev dependencies are broken)
+RUN rocm_version=5.3.2 && apt-get update && apt-get install -y wget gnupg && \
+    wget -q -O - https://repo.radeon.com/rocm/rocm.gpg.key | apt-key add - && \
+    echo "deb [arch=amd64] https://repo.radeon.com/rocm/apt/${rocm_version}/ jammy main" | \
     tee /etc/apt/sources.list.d/rocm.list && apt-get update -qq && \
-    apt-get install -qq -y rocm-dev rocm-libs hipblas && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y rocm-dev${rocm_version} rocm-libs${rocm_version} \
+    rocblas${rocm_version} && \
+    rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ENV ROCM_PATH=/opt/rocm
 ENV PATH="${ROCM_PATH}/bin:${ROCM_PATH}/rocprofiler/bin:${ROCM_PATH}/opencl/bin:${PATH}"
