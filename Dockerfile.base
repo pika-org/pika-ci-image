@@ -110,7 +110,7 @@ RUN apt-get update && \
     mv fd /usr/local/bin && \
     curl --output inshpect \
       --location https://raw.githubusercontent.com/msimberg/inshpect/main/inshpect && \
-    (echo "342158cddb11c31c75c917334eff1a91debdc210ae38ded1447a14065f205e78 inshpect" | sha256sum --check) && \
+    (echo "04b6160cc0b1a45a38db319617697a0bb6a0c1413313d945a4ba73811dd5288a inshpect" | sha256sum --check) && \
     chmod +x inshpect && \
     mv inshpect /usr/local/bin && \
     cd /tmp && \
