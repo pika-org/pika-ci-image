@@ -75,7 +75,7 @@ RUN apt-get update && \
     cd /tmp && \
     git clone https://github.com/NVIDIA/stdexec.git && \
     cd stdexec && \
-    git checkout 6510f5bd69cc03b24668f26eda3dd3cca7e81bb2 && \
+    git checkout 7a47a4aa411c1ca9adfcb152c28cc3dd7b156b4d && \
     cmake . && \
     make install && \
     cd /tmp && \
