@@ -31,6 +31,7 @@ RUN apt-get update && \
       libgoogle-perftools-dev \
       libhwloc-dev \
       lld \
+      llvm \
       mpi-default-dev \
       ninja-build \
       python3 \
