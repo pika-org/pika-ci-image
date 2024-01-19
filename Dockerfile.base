@@ -15,7 +15,7 @@
 FROM ubuntu:jammy
 
 # Update and install libraries and tools from repositories
-RUN apt-get update && \
+RUN apt-get update && apt-get dist-upgrade --yes && \
     apt-get install --no-install-recommends --yes \
       bzip2 \
       clang \
