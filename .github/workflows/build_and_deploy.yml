@@ -9,7 +9,9 @@ name: Build and deploy docker images
 # The builds are triggered with pushes on the 'main' branch or with a pull
 # request against the 'main' branch
 on:
-  pull_request:
+  #pull_request:
+  pull_request_target:
+    branches: main
   push:
     branches: main
 
