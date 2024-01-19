@@ -112,7 +112,7 @@ RUN apt-get update && \
     tar --extract --strip-components 1 --file fd.tar.gz && \
     mv fd /usr/local/bin && \
     curl --output inshpect \
-      --location https://raw.githubusercontent.com/msimberg/inshpect/main/inshpect && \
+      --location https://raw.githubusercontent.com/msimberg/inshpect/f7b6045cdf832da30be1b0fb88a35827cc443ffa/inshpect && \
     (echo "04b6160cc0b1a45a38db319617697a0bb6a0c1413313d945a4ba73811dd5288a inshpect" | sha256sum --check) && \
     chmod +x inshpect && \
     mv inshpect /usr/local/bin && \
