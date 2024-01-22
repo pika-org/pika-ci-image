@@ -24,11 +24,6 @@ ENV PATH="${ROCM_PATH}/bin:${ROCM_PATH}/rocprofiler/bin:${ROCM_PATH}/opencl/bin:
 
 # Install a newer CMake
 RUN cd /tmp && \
-    curl --output cmake.tar.gz \
-    --location https://github.com/Kitware/CMake/releases/download/v3.22.0/cmake-3.22.0-Linux-x86_64.tar.gz && \
-    (echo "dc73115520d13bb64202383d3df52bc3d6bbb8422ecc5b2c05f803491cb215b0" cmake.tar.gz | sha256sum --check) && \
-    tar xvf cmake.tar.gz --strip-components=1 --directory /usr/local && \
-    rm -rf cmake.tar.gz && \
     # Install whip
     cd /tmp && \
     git clone https://github.com/eth-cscs/whip.git && \
