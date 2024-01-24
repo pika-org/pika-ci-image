@@ -12,7 +12,7 @@
 # can be updated and tested in a separate PR without risking breaking open pull
 # request builds.
 
-FROM ubuntu:jammy
+FROM ubuntu:23.10
 
 # Update and install libraries and tools from repositories
 RUN apt-get update && apt-get dist-upgrade --yes && \
