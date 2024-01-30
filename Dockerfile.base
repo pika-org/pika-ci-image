@@ -12,7 +12,7 @@
 # can be updated and tested in a separate PR without risking breaking open pull
 # request builds.
 
-FROM ubuntu:jammy
+FROM ubuntu:23.10
 
 # Update and install libraries and tools from repositories
 RUN apt-get update && apt-get dist-upgrade --yes && \
@@ -21,39 +21,32 @@ RUN apt-get update && apt-get dist-upgrade --yes && \
       clang \
       clang-format \
       clang-tidy \
+      cmake \
       codespell \
       curl \
       git \
       graphviz \
+      grcov \
       make \
+      libclang-rt-dev \
       libboost-filesystem-dev \
-      libboost-regex-dev \
       libgoogle-perftools-dev \
+      libfmt-dev \
       libhwloc-dev \
       lld \
       llvm \
       mpi-default-dev \
       ninja-build \
-      python3 \
-      python3-pip \
+      pipx \
       shfmt \
       valgrind \
       xsltproc \
       && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
-    # Install CMake
-    cd /tmp && \
-    curl --output cmake.tar.gz \
-      --location https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1-Linux-x86_64.tar.gz && \
-    (echo "f3c654b2e226b9d43369e0bd8487c51618d4dbe5a1af929dd32af7e6ca432d60" cmake.tar.gz | sha256sum --check) && \
-    tar xvf cmake.tar.gz --strip-components=1 --directory /usr/local && \
-    rm -rf cmake.tar.gz && \
-    # Install cmake-format
-    pip3 install \
-      black \
-      cmake_format \
-      && \
+    # Install black and cmake-format
+    pipx install black && \
+    pipx install cmakelang && \
     # Use lld as the linker
     rm /usr/bin/ld && \
     ln -s /usr/bin/ld.lld /usr/bin/ld && \
@@ -65,14 +58,6 @@ RUN apt-get update && apt-get dist-upgrade --yes && \
     make -j install && \
     cd /tmp && \
     rm -rf /tmp/cpp-dependencies && \
-    # Install grcov
-    cd /tmp && \
-    curl --output grcov.tar.bz2 \
-      --location https://github.com/mozilla/grcov/releases/download/v0.8.11/grcov-x86_64-unknown-linux-gnu.tar.bz2 && \
-    (echo "a0e79093a5198e20549bdf970ef6028e20ab2d5eb6f5e68abff21da134e5709c grcov.tar.bz2" | sha256sum --check) && \
-    tar xvf grcov.tar.bz2 && \
-    mv grcov /usr/local/bin && \
-    rm -rf grcov.tar.bz2 && \
     # Install P2300 reference implementation
     cd /tmp && \
     git clone https://github.com/NVIDIA/stdexec.git && \
@@ -82,15 +67,6 @@ RUN apt-get update && apt-get dist-upgrade --yes && \
     make install && \
     cd /tmp && \
     rm -rf /tmp/stdexec && \
-    # Install fmt
-    cd /tmp && \
-    git clone https://github.com/fmtlib/fmt.git && \
-    cd fmt && \
-    git checkout 9.1.0 && \
-    cmake -DBUILD_SHARED_LIBS=ON . && \
-    make install && \
-    cd /tmp && \
-    rm -rf /tmp/fmt && \
     # Install inshpect (and dependencies ripgrep, fd, dasel). ripgrep needs
     # PCRE2 support, which the package in the repositories doesn't have.
     mkdir inshpect && \
@@ -120,5 +96,8 @@ RUN apt-get update && apt-get dist-upgrade --yes && \
     rm -rf /tmp/inshpect
 
 ENV CXX clang++
+
+# Add pipx executables to the path
+ENV PATH /root/.local/bin:$PATH
 
 # IMPORTANT: Did you read the note at the top of the file?
