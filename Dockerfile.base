@@ -27,6 +27,7 @@ RUN apt-get update && apt-get dist-upgrade --yes && \
       git \
       graphviz \
       grcov \
+      hwloc \
       make \
       libclang-rt-dev \
       libboost-filesystem-dev \
