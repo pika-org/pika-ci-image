@@ -34,6 +34,7 @@ RUN apt-get update && apt-get dist-upgrade --yes && \
       libgoogle-perftools-dev \
       libfmt-dev \
       libhwloc-dev \
+      libspdlog-dev \
       lld \
       llvm \
       mpi-default-dev \

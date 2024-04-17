@@ -16,7 +16,10 @@ RUN rocm_version=5.3.2 && apt-get update && apt-get install -y wget gnupg && \
     echo "deb [arch=amd64] https://repo.radeon.com/rocm/apt/${rocm_version}/ jammy main" | \
     tee /etc/apt/sources.list.d/rocm.list && apt-get update -qq && \
     apt-get install -y rocm-dev${rocm_version} rocm-libs${rocm_version} \
-    rocblas${rocm_version} && \
+    rocblas${rocm_version} \
+    # Installing spdlog here separately since the required base image for the
+    # HIP image does not yet have spdlog installed
+    libspdlog-dev && \
     rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ENV ROCM_PATH=/opt/rocm
