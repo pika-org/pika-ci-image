@@ -38,7 +38,7 @@ RUN cd /tmp && \
     git clone https://github.com/fmtlib/fmt.git && \
     cd fmt && \
     git checkout 9.1.0 && \
-    cmake -DBUILD_SHARED_LIBS=ON . && \
+    cmake -DBUILD_SHARED_LIBS=ON -DFMT_DOC=OFF -DFMT_TEST=OFF . && \
     make install && \
     cd /tmp && \
     rm -rf /tmp/fmt && \
