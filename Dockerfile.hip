@@ -16,10 +16,7 @@ RUN rocm_version=5.3.2 && apt-get update && apt-get install -y wget gnupg && \
     echo "deb [arch=amd64] https://repo.radeon.com/rocm/apt/${rocm_version}/ jammy main" | \
     tee /etc/apt/sources.list.d/rocm.list && apt-get update -qq && \
     apt-get install -y rocm-dev${rocm_version} rocm-libs${rocm_version} \
-    rocblas${rocm_version} \
-    # Installing spdlog here separately since the required base image for the
-    # HIP image does not yet have spdlog installed
-    libspdlog-dev && \
+    rocblas${rocm_version} && \
     rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ENV ROCM_PATH=/opt/rocm
@@ -44,4 +41,14 @@ RUN cd /tmp && \
     cmake -DBUILD_SHARED_LIBS=ON . && \
     make install && \
     cd /tmp && \
-    rm -rf /tmp/fmt
+    rm -rf /tmp/fmt && \
+    # Installing spdlog here separately since the required base image for the
+    # HIP image does not yet have spdlog installed
+    cd /tmp && \
+    git clone https://github.com/gabime/spdlog.git && \
+    cd spdlog && \
+    git checkout v1.11.0 && \
+    cmake -DBUILD_SHARED_LIBS=ON -DSPDLOG_FMT_EXTERNAL=ON . && \
+    make install && \
+    cd /tmp && \
+    rm -rf /tmp/spdlog

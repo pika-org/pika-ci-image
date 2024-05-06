@@ -17,7 +17,7 @@ env:
   base_image_version: 25
   base_image_name: pika-ci-base
   hip_base_image_version: 21
-  hip_image_version: 15
+  hip_image_version: 16
   hip_image_name: pika-ci-hip
 
 jobs:
