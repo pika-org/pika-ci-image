@@ -10,19 +10,24 @@ FROM $BASE_IMAGE
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install ROCm
-# (using rocm-dev5.3.2 instead of rocm-dev as rocm-dev dependencies are broken)
-RUN rocm_version=5.3.2 && apt-get update && apt-get install -y wget gnupg && \
-    wget -q -O - https://repo.radeon.com/rocm/rocm.gpg.key | apt-key add - && \
-    echo "deb [arch=amd64] https://repo.radeon.com/rocm/apt/${rocm_version}/ jammy main" | \
-    tee /etc/apt/sources.list.d/rocm.list && apt-get update -qq && \
-    apt-get install -y rocm-dev${rocm_version} rocm-libs${rocm_version} \
-    rocblas${rocm_version} && \
+# https://rocm.docs.amd.com/projects/install-on-linux/en/latest/install/native-install/ubuntu.html
+RUN apt-get update && apt-get install -y wget gnupg && \
+    mkdir --parents --mode=0755 /etc/apt/keyrings && \
+    wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | tee /etc/apt/keyrings/rocm.gpg > /dev/null && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/amdgpu/6.2.2/ubuntu noble main" \
+        | tee /etc/apt/sources.list.d/amdgpu.list && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/6.2.2 noble main" \
+        | tee --append /etc/apt/sources.list.d/rocm.list && \
+    echo 'Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600' \
+        | tee /etc/apt/preferences.d/rocm-pin-600 && \
+    cat /etc/apt/preferences.d/rocm-pin-600 && \
+    apt-get update -qq && \
+    apt-get install -y rocm rocblas git && \
     rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ENV ROCM_PATH=/opt/rocm
-ENV PATH="${ROCM_PATH}/bin:${ROCM_PATH}/rocprofiler/bin:${ROCM_PATH}/opencl/bin:${PATH}"
+ENV PATH="${ROCM_PATH}/bin:${PATH}"
 
-# Install a newer CMake
 RUN cd /tmp && \
     # Install whip
     cd /tmp && \
@@ -31,24 +36,4 @@ RUN cd /tmp && \
     cmake -DWHIP_BACKEND=HIP . && \
     make install && \
     cd /tmp && \
-    rm -rf /tmp/whip && \
-    # Install fmt (NOTE: fmt is installed in newer versions of the base image,
-    # but not in the currently used version of the base image)
-    cd /tmp && \
-    git clone https://github.com/fmtlib/fmt.git && \
-    cd fmt && \
-    git checkout 9.1.0 && \
-    cmake -DBUILD_SHARED_LIBS=ON -DFMT_DOC=OFF -DFMT_TEST=OFF . && \
-    make install && \
-    cd /tmp && \
-    rm -rf /tmp/fmt && \
-    # Installing spdlog here separately since the required base image for the
-    # HIP image does not yet have spdlog installed
-    cd /tmp && \
-    git clone https://github.com/gabime/spdlog.git && \
-    cd spdlog && \
-    git checkout v1.11.0 && \
-    cmake -DBUILD_SHARED_LIBS=ON -DSPDLOG_FMT_EXTERNAL=ON . && \
-    make install && \
-    cd /tmp && \
-    rm -rf /tmp/spdlog
+    rm -rf /tmp/whip
