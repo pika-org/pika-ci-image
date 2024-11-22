@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y wget gnupg && \
         | tee /etc/apt/preferences.d/rocm-pin-600 && \
     cat /etc/apt/preferences.d/rocm-pin-600 && \
     apt-get update -qq && \
-    apt-get install -y rocm rocblas git && \
+    apt-get install -y rocm-dev rocblas-dev rocsolver-dev && \
     rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ENV ROCM_PATH=/opt/rocm
