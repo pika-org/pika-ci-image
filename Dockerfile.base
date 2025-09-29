@@ -15,8 +15,16 @@
 FROM ubuntu:23.10
 
 # Update and install libraries and tools from repositories
-RUN apt-get update && apt-get dist-upgrade --yes && \
+# Force update glibc and PAM to fix CVE vulnerabilities
+RUN apt-get update && \
+    apt-get dist-upgrade --yes && \
     apt-get install --no-install-recommends --yes \
+      libc-bin \
+      libc6 \
+      libpam-modules \
+      libpam-modules-bin \
+      libpam-runtime \
+      libpam0g \
       bzip2 \
       clang \
       clang-format \
