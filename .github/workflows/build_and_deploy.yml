@@ -14,10 +14,10 @@ on:
     branches: main
 
 env:
-  base_image_version: 29
+  base_image_version: 30
   base_image_name: pika-ci-base
-  hip_base_image_version: 29
-  hip_image_version: 18
+  hip_base_image_version: 30
+  hip_image_version: 19
   hip_image_name: pika-ci-hip
 
 jobs:
