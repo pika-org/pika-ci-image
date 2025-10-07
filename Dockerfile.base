@@ -12,7 +12,7 @@
 # can be updated and tested in a separate PR without risking breaking open pull
 # request builds.
 
-FROM ubuntu:23.10
+FROM ubuntu:24.04
 
 # Update and install libraries and tools from repositories
 RUN apt-get update && apt-get dist-upgrade --yes && \
